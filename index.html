@@ -11,18 +11,24 @@
     $(document).ready(function () {
         $('#submit').click(function () {
             if ($('#username').val() != '') {
+                $('#breakdown').empty();
+                $('#posts').empty();
+
                 $('#posts').append("Getting @" + $('#username').val() + "'s tweets...");
-                $.jTwitter($('#username').val(), 20, function (data) {
+                $.jTwitter($('#username').val(), 10, function (data) {
                     $('#posts').empty();
                     $('#tuser').text($('#username').val());
                     $.each(data, function (i, post) {
-                        $('#posts').append(
+                        $el = $(
 						'<div class="post" onclick="analyseTweet(this)" onmouseover="hoverOver(this)" onmouseout="hoverOut(this)">'
 						+ ' <div class="txt">'
 						+ post.text
 						+ ' </div>'
 						+ '</div>'
-					);
+					    );
+                        $el.hide();
+                        $('#posts').append($el)
+                        $el.slideDown();
                     });
                 });
             }
