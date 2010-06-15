@@ -1,0 +1,191 @@
+<html> 
+<head> 
+<title>jTwitter - jQuery Twitter plugin demo</title> 
+<style> 
+/* Pretty printing styles. Used with prettify.js. */
+.str { color: #080; }
+.kwd { color: #008; }
+.com { color: #800; }
+.typ { color: #606; }
+.lit { color: #066; }
+.pun { color: #660; }
+.pln { color: #000; }
+.tag { color: #008; }
+.atn { color: #606; }
+.atv { color: #080; }
+.dec { color: #606; }
+pre.prettyprint, pre.code { padding: .5em;border:none; border-left: 3px solid #ccc; background-color:#fbfbfb }
+@media print {
+.str { color: #060; }
+.kwd { color: #006; font-weight: bold; }
+.com { color: #600; font-style: italic; }
+.typ { color: #404; font-weight: bold; }
+.lit { color: #044; }
+.pun { color: #440; }
+.pln { color: #000; }
+.tag { color: #006; font-weight: bold; }
+.atn { color: #404; }
+.atv { color: #060; }
+</style> 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js" type="text/javascript"></script> 
+<script src='http://www.gstatic.com/codesite/ph/14407163836014391775/js/prettify/prettify.js'></script> <script src="jquery.jtwitter.js"></script> 
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Get latest 10 tweets by jQueryHowto
+        $.jTwitter('jQueryHowto', 10, function (data) {
+            $('#posts').empty();
+            $.each(data, function (i, post) {
+                $('#posts').append(
+				'<div class="post">'
+				+ ' <div class="txt">'
+				+ post.text
+				+ ' </div>'
+				+ '</div>'
+			);
+            });
+        });
+
+        // Get your own tweets
+        $('#submit').click(function () {
+            if ($('#username').val() != '') {
+                $.jTwitter($('#username').val(), 10, function (data) {
+                    $('#posts').empty();
+                    $('#tuser').text($('#username').val());
+                    $.each(data, function (i, post) {
+                        $('#posts').append(
+						'<div class="post">'
+						+ ' <div class="txt">'
+						+ post.text
+						+ ' </div>'
+						+ '</div>'
+					);
+                    });
+                });
+            }
+        });
+    });
+</script> 
+<style> 
+body{
+	font:11px Verdana, Geneva, sans-serif;
+	margin-left:2em;
+}
+h1{
+	font:2em Georgia, "Times New Roman", Times, serif;
+}
+#posts{
+	border:1px solid #ccc;
+	padding:3px;
+	background-color:#dedede;
+	width:350px;
+}
+.post{
+	border-bottom:1px dotted #ddd;
+	padding:10px;
+	background-color:white;
+}
+ 
+.left{
+	float:left;
+	width:360px;
+}
+.right{
+	float:left;
+	margin-left:20px;
+	padding-left:20px;
+	border-left:1px solid #ccc;
+}
+p.em{
+	background-color:#FBFBFB;
+	border-color:#CCCCCC;
+	border-style:dotted;
+	border-width:1px 0;
+	color:#000000;
+	font:italic 1.5em georgia, "Times New Roman";
+	margin:0 0 10px;
+	padding:1em 20px;
+}
+</style> 
+</head> 
+<body> 
+ 
+<div class="left"> 
+<h1><span id="tuser">jQuery Howto</span>'s Tweets</h1> 
+<div id="posts"><div class="post">Getting your tweets...</div></div> 
+<br /> 
+<form><strong>You can get tweets for:</strong> <input type="text" name="username" id="username"/><input type='button' value="Get" id="submit"/></form> 
+ 
+<p class="em">Use CSS and your own HTML markup to style your tweets.</p> 
+<p class="em">Don't forget, returned results have more details about the post.<br />Ex: Post date, user profile image, from where it was posted, etc.</p> 
+</div><!--.left--> 
+ 
+<div class="right"> 
+  <h1>Markup</h1> 
+  <pre class="prettyprint">&lt;html&gt;
+&lt;head&gt;
+&lt;script type="text/javascript" src="jquery.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="jquery.jtwitter.js"&gt;&lt;/script&gt;
+ 
+&lt;script type="text/javascript"&gt;
+$(document).ready(function(){
+    // Get latest 6 tweets by jQueryHowto
+    $.jTwitter('jQueryHowto', 10, function(data){
+        $('#posts').empty();
+        $.each(data, function(i, post){
+            $('#posts').append(
+                '&lt;div class="post"&gt;'
+                +' &lt;div class="txt"&gt;'
+                // See output-demo.js file for details
+                +    post.text
+                +' &lt;/div&gt;'
+                +'&lt;/div&gt;'
+            );
+        });
+    });
+});
+&lt;/script&gt;
+ 
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;h1&gt;jQuery Howto's Tweets&lt;/h1&gt;
+	&lt;div id="posts"&gt;Getting your tweets...&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre><p>The generated HTML markup will look like this:</p> 
+ 
+<pre class="prettyprint">&lt;div id="posts"&gt;
+  &lt;div class="post"&gt;
+    Tweet text 1
+  &lt;/div&gt;
+  &lt;div class="post"&gt;
+    Tweet text 2
+  &lt;/div&gt;
+  &lt;div class="post"&gt;
+    Tweet text 3
+  &lt;/div&gt;
+  &lt;div class="post"&gt;
+    ...
+  &lt;/div&gt;
+&lt;/div&gt;</pre> 
+</div><!--.right--> 
+ 
+<br clear="all" /> 
+ 
+<p><a href="http://jquery-howto.blogspot.com/2009/04/jquery-twitter-api-plugin.html">jQuery Tweeter plugin</a> homepage.</p> 
+ 
+<hr /> 
+ 
+<a href="../">&laquo; Other demos</a> 
+ 
+<script type='text/javascript'>
+    prettyPrint();
+</script> 
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script> 
+<script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-9195794-2");
+        pageTracker._trackPageview();
+    } catch (err) { }</script></body> 
+</html>

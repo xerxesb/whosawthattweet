@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Who Saw That Tweet?</title>
+	<meta http-equiv="pragma" content="no-cache" />
+
+    <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.1-vsdoc.js" type="text/javascript"></script>
+    <script type="text/javascript" src="jquery.jtwitter.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#submit').click(function () {
+            if ($('#username').val() != '') {
+                $('#posts').append("Getting @" + $('#username').val() + "'s tweets...");
+                $.jTwitter($('#username').val(), 20, function (data) {
+                    $('#posts').empty();
+                    $('#tuser').text($('#username').val());
+                    $.each(data, function (i, post) {
+                        $('#posts').append(
+						'<div class="post" onclick="analyseTweet(this)" onmouseover="hoverOver(this)" onmouseout="hoverOut(this)">'
+						+ ' <div class="txt">'
+						+ post.text
+						+ ' </div>'
+						+ '</div>'
+					);
+                    });
+                });
+            }
+        });
+
+        username = getParameterByName("username");
+
+        if (username != "") {
+            $('#username').val(username);
+            $('#submit').click();
+        }
+    });
+
+    function hoverOver(el) {
+        el.style.backgroundColor = "#FFC8C8C8";
+    }
+
+    function hoverOut(el) {
+        el.style.backgroundColor = "#00000000";
+    }
+
+
+    function analyseTweet(data) {
+        $('#breakdown').slideUp('slow', function () {
+            $('#breakdown').empty();
+            $('#breakdown').show();
+
+            tweetContent = data.innerText;
+            reply = null;
+            mentions = null;
+
+            if (tweetContent.indexOf('@') == 0) {
+                reply = tweetContent.match(/^@[A-Za-z0-9_]+/);
+            }
+
+            mentions = tweetContent.match(/@[A-Za-z0-9_]+/g);
+
+            tags = tweetContent.match(/#[A-Za-z0-9]+/g);
+
+            if (reply != null) {
+                addBreakdown("Replied to", reply[0], "A \"Reply\" is a tweet which addresses a recipient at the start of the tweet. It's a more specific form of Mention.");
+            }
+
+            for (var i in mentions) {
+                if (reply == null || (mentions[i] != reply[0])) {
+                    addBreakdown("Mentioned ", mentions[i], "A \"Mention\" is a tweet which addresses one or more recipients anywhere in the body of the message.");
+                }
+            }
+
+            if (reply != null) {
+                for (var i in mentions) {
+                    addBreakdown("Common followers between", "@" + $('#username').val() + " and " + mentions[i], "Click for details...");
+                }
+            }
+            else {
+                addBreakdown("All Followers of", "@" + $('#username').val(), "Click for details...");
+            }
+
+            addBreakdown("Public Timeline", "", "Anyone who views @" + $('#username').val() + "'s public timeline");
+
+            for (var i in tags) {
+                addBreakdown("Tag ", "[" + tags[i] + "]", "Anyone who searches for the tag using Twitter's search service, or configures their Twitter client to search for this term");
+            }
+        });
+    }
+
+    function addBreakdown(title, screenName, description) {
+        var $breakdown = $('.tweetBreakdown_template').clone();
+        $breakdown.attr("class", "tweetBreakdown");
+        $breakdown.find('#title').text(title);
+        $breakdown.find('#screenName').text(screenName);
+        $breakdown.find('#description').text(description);
+
+        $('#breakdown').append($breakdown);
+        $breakdown.slideDown('slow')
+    }
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(window.location.href);
+        if (results == null)
+            return "";
+        else
+            return results[1];
+    }
+</script>
+
+<style type="text/css" media="screen">
+    .post 
+    {
+    	border: 1px dashed red;
+    	margin: 5px;
+    }
+    
+    .post:hover
+    {
+    	cursor: hand;
+    }
+    
+    .tweetBreakdown
+    {
+    	border: 1px dashed black;
+    	margin: 10px;
+    	width: 450px;
+    }
+</style>
+
+</head>
+
+<body>
+<form><input type="text" name="username" id="username"/><input type='button' value="Get" id="submit"/></form> 
+<div id="posts"></div>
+<hr />
+
+<div id="breakdown"></div>
+
+<div class="tweetBreakdown_template" style="display:none">
+    <span id="title"></span> <span id="screenName"></span>
+    <div id="description"></div>
+</div>
+
+</body>
+
+</html>
