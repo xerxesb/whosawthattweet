@@ -1,13 +1,11 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Who Saw That Tweet?</title>
-	<meta http-equiv="pragma" content="no-cache" />
-
+    <meta http-equiv="pragma" content="no-cache" />
     <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.1.js" type="text/javascript"></script>
     <script type="text/javascript" src="jquery.jtwitter.js"></script>
-
-<script type="text/javascript">
+    <script type="text/javascript">
     $(document).ready(function () {
         $('#submit').click(function () {
             if ($('#username').val() != '') {
@@ -44,6 +42,7 @@
 
     function findCommonFollowers(userName1, userName2) {
         $('#friendsList').empty();
+        $('#friendsList').slideDown();
 
         $('#friendsList').text("Loading followers for " + userName1);
 
@@ -56,32 +55,57 @@
                 $('#friendsList').empty();
 
                 var commonFollowersFinder = new CommonFollowersFinder();
-                commonFollowersFinder.findCommonFollowers(follower1Data, follower2Data, function (name) {
-                    $names = $("<div>@" + name + "</div>");
-                    $names.hide();
-                    $('#friendsList').append($names);
-                    $names.slideDown();
+                var commonFollowers = commonFollowersFinder.findCommonFollowers(follower1Data, follower2Data);
+                $.each(commonFollowers, function (index, follower) {
+                    $name = $("<div>@" + follower + "</div>");
+                    $name.hide();
+                    $('#friendsList').append($name);
+                    $name.slideDown();
                 });
+            });
+        });
+    }
+
+    function listUsersFollowers(userName) {
+        $('#friendsList').empty();
+        $('#friendsList').slideDown();
+
+        $('#friendsList').text("Loading followers for " + userName);
+
+        var followersFinder1 = new Followers();
+        followersFinder1.getFollowers(userName, function (followerData) {
+            $('#friendsList').empty();
+            $('#friendsList').append("<div>@" + userName + " has " + followerData.length + " followers</div>");
+
+            $.each(followerData, function (i, name) {
+                $names = $("<div>@" + name + "</div>");
+                $names.hide();
+                $('#friendsList').append($names);
+                $names.slideDown();
             });
         });
     }
 
     function CommonFollowersFinder() {
 
-        var _findAllCommonFollowers = function (person1Followers, person2Followers, onMatchCallBack) {
+        var _findAllCommonFollowers = function (person1Followers, person2Followers) {
+            var followerList = new Array();
+
             for (var index1 in person1Followers) {
                 for (var index2 in person2Followers) {
                     if (person1Followers[index1] == person2Followers[index2]) {
-                        onMatchCallBack(person1Followers[index1]);
+                        followerList.push(person1Followers[index1]);
                         break;
                     }
                 }
             }
+
+            return followerList;
         }
 
         return {
-            findCommonFollowers: function (person1Followers, person2Followers, onMatchCallBack) {
-                _findAllCommonFollowers(person1Followers, person2Followers, onMatchCallBack);
+            findCommonFollowers: function (person1Followers, person2Followers) {
+                return _findAllCommonFollowers(person1Followers, person2Followers);
             }
         };
     }
@@ -119,15 +143,19 @@
     }
 
     function hoverOver(el) {
-        el.style.backgroundColor = "#FFC8C8C8";
+//        el.style.background = "#FFC8C8C8";
     }
 
     function hoverOut(el) {
-        el.style.backgroundColor = "#00000000";
+//        el.style.background = "#00000000";
     }
 
 
     function analyseTweet(data) {
+        $('#friendsList').slideUp('slow', function() { 
+            $('#friendsList').empty();
+        });
+
         $('#breakdown').slideUp('slow', function () {
             $('#breakdown').empty();
             $('#breakdown').show();
@@ -156,11 +184,12 @@
 
             if (reply != null) {
                 for (var i in mentions) {
-                    addBreakdown("Common followers between", "@" + $('#username').val() + " and " + mentions[i], '<a href="#" onclick="findCommonFollowers(\'' + $('#username').val() + '\', \'' + mentions[i].replace("@", "") + '\')">Click for details...</a>');
+                    var desc = '<a href="#" onclick="findCommonFollowers(\'' + $('#username').val() + '\', \'' + mentions[i].toString().replace("@", "") + '\')">Click for details...</a>';
+                    addBreakdown("Common followers between", "@" + $('#username').val() + " and " + mentions[i], desc);
                 }
             }
             else {
-                addBreakdown("All Followers of", "@" + $('#username').val(), '<a href="">Click for details...</a>');
+                addBreakdown("All Followers of", "@" + $('#username').val(), '<a href="#" onclick="listUsersFollowers(\'' + $('#username').val() + '\')">Click for details...</a>');
             }
 
             addBreakdown("Public Timeline", "", "Anyone who views @" + $('#username').val() + "'s public timeline");
@@ -192,54 +221,52 @@
         else
             return results[1];
     }
-</script>
-
-<style type="text/css" media="screen">
-    .post 
-    {
-    	border: 1px dashed red;
-    	margin: 5px;
-    	cursor: move;
-    }
-    
-    .post:hover
-    {
-    	cursor: hand;
-    }
-    
-    .tweetBreakdown
-    {
-    	border: 1px dashed black;
-    	margin: 10px;
-    	width: 450px;
-    }
-    
-    #friendsList
-    {
-    	border: 5px inset yellow;
-    	margin: 10px;
-    	width: 450px;
-    }
-    
-    
-</style>
-
+    </script>
+    <style type="text/css" media="screen">
+        .post
+        {
+            border: 1px dashed red;
+            margin: 5px;
+            cursor: move;
+        }
+        
+        .post:hover
+        {
+            cursor: hand;
+        }
+        
+        .tweetBreakdown
+        {
+            border: 1px dashed black;
+            margin: 10px;
+            width: 450px;
+        }
+        
+        #friendsList
+        {
+            border: 5px inset yellow;
+            margin: 10px;
+            width: 450px;
+        }
+    </style>
 </head>
-
 <body>
-<form><input type="text" name="username" id="username"/><input type='button' value="Get" id="submit"/></form> 
-<div id="posts"></div>
-<hr />
+    <form>
+    <input type="text" name="username" id="username" /><input type='button' value="Get"
+        id="submit" /></form>
 
-<div id="breakdown"></div>
+    <div id="posts"></div>
 
-<div class="tweetBreakdown_template" style="display:none">
-    <span id="title"></span> <span id="screenName"></span>
-    <div id="description"></div>
-</div>
+    <hr />
+    
+    <div id="breakdown"></div>
 
-<div id="friendsList"></div>
+    <div id="friendsList" style="display:none;"></div>
 
+    <div class="tweetBreakdown_template" style="display:none">
+        <span id="title"></span><span id="screenName"></span>
+        <div id="description">
+        </div>
+    </div>
 </body>
-
 </html>
