@@ -12,12 +12,11 @@
                     $('#breakdown').empty();
                     $('#posts').empty();
                     $('#friendsList').empty();
-                    $('#centered').width("30%");
+                    $('#centered').animate({ width: "30%" }, 500);
 
                     $('#posts').append("Getting @" + $('#username').val() + "'s tweets...");
                     $.jTwitter($('#username').val(), 10, function (data) {
                         $('#posts').empty();
-                        $('#centered').width("60%");
                         $('#tuser').text($('#username').val());
 
                         $.each(data, function (i, post) {
@@ -45,7 +44,7 @@
         });
 
         function findCommonFollowers(userName1, userName2) {
-            $('#centered').width("80%");
+            $('#centered').animate({ width: "80%" }, 500);
             $('#friendsList').empty();
             $('#friendsList').slideDown();
 
@@ -75,7 +74,7 @@
         }
 
         function listUsersFollowers(userName) {
-            $('#centered').width("80%");
+            $('#centered').animate({ width: "80%" }, 500);
 
             $('#friendsList').empty();
             $('#friendsList').slideDown();
@@ -162,7 +161,7 @@
 
 
         function analyseTweet(data) {
-            $('#centered').width("60%");
+            $('#centered').animate({ width: "60%" }, 500);
 
             $('#friendsList').slideUp('slow', function () {
                 $('#friendsList').empty();
